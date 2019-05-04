@@ -1,19 +1,37 @@
-class Mine_Sweeper:
-    #def __init__:
+'''
+Filename:
+    Game.py
+Date last modified:
+    May 3, 2019
+By:
+    Wesley Duerksen
+'''
 
-    def build(self,height,width,x,y,percent):
+class Mine_Sweeper:
+
+    def build(self,height,width):
         '''
         def:
             makes the game board and fills it
         input:
             height = board Y
             width = board X
-            x = Starting square's x cord
-            y = Starting square's y cord
-            percent = whole number between 10-80
         '''
-        self.height = height
-        self.width = width
+        height = int(height)
+        width = int(width)
+
+        # error checking
+        input = str(height)+str(width)
+        if not input.isdigit():
+            raise ValueError("one of the inputs isn't a digit")
+        elif 6 > height or height > 100:
+            raise ValueError("Invalid Height")
+        elif 6 > width or width > 100:
+            raise ValueError("Invalid Width")
+
+        # saving the variables
+        self.height = int(height)
+        self.width = int(width)
         self.board = []
 
         # create the board
@@ -23,17 +41,23 @@ class Mine_Sweeper:
                 temp.append("he")
             self.board.append(temp)
 
-        # fill the board
-        self.base_box(x,y)
-        self.put_bombs(percent)
-        self.put_numbers()
-        self.reveal()
-
     def base_box(self,x,y):
         '''
         def:
             reveal the 3x3 around the first pick
         '''
+        x = int(x)-1
+        y = int(y)-1
+
+        # error checking
+        temp = str(x)+str(y)
+        if not temp.isdigit():
+            raise ValueError("invalid starting cell")
+        elif x < 0 or x > self.width:
+            raise ValueError("x out of range")
+        elif y < 0 or y > self.height:
+            raise ValueError("y out of range")
+
         for i in range(x-1,x+2):
             for j in range(y-1,y+2):
                 if i < 0 or i >= self.width:
@@ -48,30 +72,50 @@ class Mine_Sweeper:
         def:
             prints the board
         '''
-        # top bar
-        for i in range(self.width):
+        import os
+        os.system('clear')
+
+        # top row
+        col = 1
+        print("  |", end = '')
+        for i in range(self.height):
+            print("{:^3}".format(str(col)), end = '')
+            col += 1
+        print("\n---", end = '')
+        for i in range(self.height):
             print("---", end = '')
         print('')
 
         # middle rows
+        rows = 1
         for row in self.board:
-            #print('|', end = '')
+            # side bar
+            if rows < 10:
+                print("{:>2}".format(str(rows))+'|', end = '')
+            else:
+                print(str(rows)+'|', end = '')
+
+            # center
             for box in row:
                 if box[0] == 'h':
-                    print(" \ ",end = '')
+                    print(" █ ",end = '')
                 elif box == 'e':
                     print("   ", end = '')
                 elif box == 'b':
-                    print(" X ", end = '')
+                    print(" B ", end = '')
                 elif box[0] == 'f':
                     print(" F ", end = '')
-                else:
+                elif box.isdigit():
                     print(" "+box+" ", end = '')
-            print('')
-        # ⬜☢⬛
+                else:
+                    print(box, end = '')
 
-        # bottom bar
-        for i in range(self.width):
+            print('')
+            print('')
+            rows += 1
+
+        # bottom line
+        for i in range(self.height+1):
             print("---", end = '')
         print('')
 
@@ -82,13 +126,18 @@ class Mine_Sweeper:
         post:
             the board is populated with bombs
         '''
+        # input checking
+        percent = int(percent)
+        if not str(percent).isdigit() or 10 > percent or percent > 80:
+            raise ValueError("Bad percent")
+
         import random
 
         bomb_count = 0
-        target = round(self.width*self.height*percent/100)
+        self.bombs = round(self.width*self.height*percent/100)
         col = 0
         row = 0
-        while bomb_count < target:
+        while bomb_count < self.bombs:
             if self.board[col][row] == "he":
                 # decide fate
                 if random.randint(1,100) < percent:
@@ -103,7 +152,7 @@ class Mine_Sweeper:
             if row == self.height:
                 row = 0
 
-    def scan_nearby_cell(self,x,y):
+    def scan_nearby_cells_for_bomb(self,x,y):
         '''
         return:
             number of bombs in 3x3 to (x,y)
@@ -127,15 +176,14 @@ class Mine_Sweeper:
         '''
         for x in range(self.width):
             for y in range(self.height):
+
                 if self.board[x][y] != "hb":
-                    count = self.scan_nearby_cell(x,y)
+                    count = self.scan_nearby_cells_for_bomb(x,y)
                     if count != 0:
                         if self.board[x][y] == 'e':
                             self.board[x][y] = str(count)
                         else:
                             self.board[x][y] = 'h'+str(count)
-
-
 
     def reveal(self):
         '''
@@ -144,11 +192,12 @@ class Mine_Sweeper:
         '''
         something_changed = 1
         while something_changed:
-            # loop through all columns
             something_changed = 0
+
             for x in range(self.width):
-                # loop through all rows
                 for y in range(self.height):
+
+                    # skip unnecesary cells
                     if self.board[x][y] in ['b','hb','e','1','2','3','4','5','6','7','8'] or self.board[x][y][0] == 'f':
                         continue
                     else:
@@ -173,16 +222,16 @@ class Mine_Sweeper:
                             if cells[i] != "edge":
                                 cells[i] = self.board[cells[i][0]][cells[i][1]]
 
-                        # reveal if sides = 'e'
-                        edges_worked ="no"
-                        for i in [1,3,4,6]:
-                            if cells[i] == 'e':
+                        # look for numerics or 'e', if none skip
+                        if 'e' not in cells:
+                            continue
+                        # reveal if one side = 'e'
+                        elif cells[1] == 'e' or cells[3] == 'e' or cells[4] == 'e' or cells[6] == 'e':
                                 self.board[x][y] = self.board[x][y][1]
                                 something_changed = 1
-                                edges_worked = "yes"
                                 break
-                        # check all edge corner combos
-                        if edges_worked == "no":
+                        # revel if edge case evaluates
+                        else :
                             if cells[0] == 'e' and cells[1].isdigit() and cells[3].isdigit():
                                 self.board[x][y] = self.board[x][y][1]
                                 something_changed = 1
@@ -196,8 +245,6 @@ class Mine_Sweeper:
                                 self.board[x][y] = self.board[x][y][1]
                                 something_changed = 1
 
-
-
     def expose(self):
         '''
         def:
@@ -206,28 +253,43 @@ class Mine_Sweeper:
         '''
         for x in range(self.width):
             for y in range(self.height):
-                if self.board[x][y][0] in ["hb","fb"]:
+                if self.board[x][y] in ["hb","fb"]:
                     self.board[x][y] = self.board[x][y][1]
 
-
-    def update(self,x,y,op='o'):
+    def update(self,x,y,op):
         '''
         def:
             reveals or flags the (x,y) cell
             updates the rest of the board if a cell was revealed
         input:
             op = default no-op, if 'flag' flags cell
-            x = x cord
-            y = y cord
+            x = x cord assuming not base 0
+            y = y cord assuming not base 0
+        note:
+            all the dimensions are twisted around because the person see's the board flipped
         '''
-        if self.board[y][x].isdigit() or self.board[y][x] == 'e':
-            raise ValueError("that cell is already revealed")
-        elif op == 'f':
-            self.board[y][x]= 'f'+self.board[y][x][1]
+        x = int(x)-1
+        y = int(y)-1
+
+        # input checker
+        if not str(x).isdigit():
+            raise ValueError("Invalid x input")
+        elif not str(y).isdigit():
+            raise ValueError("Invalid y input")
+        elif x < 0 or x >= self.height or y < 0 or y >= self.width:
+            raise ValueError("Cell out of range")
+        elif self.board[y][x].isdigit() or self.board[y][x] == 'e':
+            raise ValueError("Fhat cell is already revealed")
+
+        # flagging the cell or revealing it
+        if op == 'f':
+            if self.board[y][x][0] == 'f':
+                self.board[y][x] = 'h'+self.board[y][x][1]
+            else:
+                self.board[y][x] = 'f'+self.board[y][x][1]
         else:
             self.board[y][x] = self.board[y][x][1]
             self.reveal()
-
 
     def save(self):
         '''
@@ -240,7 +302,7 @@ class Mine_Sweeper:
         import csv
         with open("savegame.txt",'w') as file:
             csv_file = csv.writer(file,delimiter = ',')
-            csv_file.writerow([self.width,self.height])
+            csv_file.writerow([self.width,self.height,self.bombs])
             for row in self.board:
                 csv_file.writerow(row)
 
@@ -256,11 +318,48 @@ class Mine_Sweeper:
             for row in csv_file:
                 data.append(row)
 
-        # getting width and height
+        # getting necessary variables
         self.width = int(data[0][0])
         self.height = int(data[0][1])
+        self.bombs = int(data[0][1])
 
         # copying the rest
         self.board = []
         for i in range(1,len(data)):
             self.board.append(data[i])
+
+    def game_status(self):
+        '''
+        def:
+            Determines the status of the game
+        post:
+            returns string indicating if the game is won, lost, undefined
+        '''
+        # is a bomb exposed
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.board[x][y] == "b":
+                    return "lost"
+        # all bombs aren't flagged
+        flagged = 0
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.board[x][y][0] == 'f':
+                    cell = self.board[x][y][1]
+                    if cell.isdigit() or cell == 'b':
+                        flagged += 1
+        if flagged != self.bombs:
+            return "undefined"
+        # if those failed
+        return "won"
+
+    def num_flagged(self):
+        '''
+        returns the number of flagged
+        '''
+        count = 0
+        for row in self.board:
+            for cell in row:
+                if cell[0] == 'f':
+                    count += 1
+        return count

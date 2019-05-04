@@ -1,13 +1,13 @@
 import Game
+import Start
 
-for i in range(5,100):
-    print(i)
-    game_test = Game.Mine_Sweeper()
-    game_test.build(i,i,4,4,20)
-    try:
-        game_test.update(0,0)
-    except ValueError as err:
-        print(err)
-
-    #game_test.save()
-    #game_test.load()
+test = 0
+if test:
+    test_game = Game.Mine_Sweeper()
+    test_game.build(10,10)
+    test_game.put_bombs(10)
+    test_game.expose()
+    test_game.print()
+else:
+    run = Start.UI()
+    run.menu()
