@@ -222,28 +222,14 @@ class Mine_Sweeper:
                             if cells[i] != "edge":
                                 cells[i] = self.board[cells[i][0]][cells[i][1]]
 
-                        # look for numerics or 'e', if none skip
+                        # If it has no 'e' neighbors skip it.
                         if 'e' not in cells:
                             continue
-                        # reveal if one side = 'e'
-                        elif cells[1] == 'e' or cells[3] == 'e' or cells[4] == 'e' or cells[6] == 'e':
-                                self.board[x][y] = self.board[x][y][1]
-                                something_changed = 1
-                                break
-                        # revel if edge case evaluates
-                        else :
-                            if cells[0] == 'e' and cells[1].isdigit() and cells[3].isdigit():
-                                self.board[x][y] = self.board[x][y][1]
-                                something_changed = 1
-                            elif cells[2] == 'e' and cells[1].isdigit() and cells[4].isdigit():
-                                self.board[x][y] = self.board[x][y][1]
-                                something_changed = 1
-                            elif cells[5] == 'e' and cells[3].isdigit() and cells[6].isdigit():
-                                self.board[x][y] = self.board[x][y][1]
-                                something_changed = 1
-                            elif cells[7] == 'e' and cells[4].isdigit() and cells[6].isdigit():
-                                self.board[x][y] = self.board[x][y][1]
-                                something_changed = 1
+
+
+                        # reveal the cell
+                        self.board[x][y] = self.board[x][y][1]
+                        something_changed = 1
 
     def expose(self):
         '''

@@ -134,6 +134,3 @@ class UI:
             self.game.expose()
             self.game.print()
             print("you lost...")
-
-
-    #def credits():

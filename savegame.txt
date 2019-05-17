@@ -1,8 +1,9 @@
-7,8,6
-he,he,h1,hb,h1,he,h1,hb
-he,he,1,1,2,h1,2,1
-h1,h1,1,e,1,hb,1,e
-h1,hb,1,e,1,1,1,e
-1,1,1,e,e,e,e,e
-e,e,e,e,e,1,2,2
-e,e,e,e,e,1,fb,hb
+8,8,6
+h1,1,e,e,e,e,e,e
+hb,1,e,e,e,e,1,1
+h1,1,e,e,1,1,2,hb
+h1,1,e,e,1,hb,h2,h1
+hb,1,e,e,1,1,1,he
+1,1,e,e,e,e,1,h1
+e,e,e,e,1,1,2,hb
+e,e,e,e,1,hb,h2,h1
