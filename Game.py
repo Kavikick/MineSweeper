@@ -193,7 +193,6 @@ class Mine_Sweeper:
         something_changed = 1
         while something_changed:
             something_changed = 0
-
             for x in range(self.width):
                 for y in range(self.height):
 
